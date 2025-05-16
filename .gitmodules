@@ -1,0 +1,3 @@
+[submodule "openAIKey"]
+	path = openAIKey
+	url = https://github.com/sjnltt3756/openAIKey.git
