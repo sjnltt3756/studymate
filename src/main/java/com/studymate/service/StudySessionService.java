@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -51,6 +52,21 @@ public class StudySessionService {
                         s.getStartTime(),
                         s.getEndTime()
                 ))
+                .toList();
+    }
+
+    // 날짜별 회고 조회
+    public List<String> getMemosByDate(String username, LocalDate date) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        List<StudySession> sessions = sessionRepository.findAllByUserIdAndStartTimeBetween(
+                user.getId(), date.atStartOfDay(), date.atTime(23, 59, 59)
+        );
+
+        return sessions.stream()
+                .map(StudySession::getMemo)
+                .filter(memo -> memo != null && !memo.isBlank())
                 .toList();
     }
 }

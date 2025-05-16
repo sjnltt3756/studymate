@@ -5,10 +5,12 @@ import com.studymate.dto.studysession.StudySessionRequest;
 import com.studymate.dto.studysession.StudySessionResponse;
 import com.studymate.service.StudySessionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -31,6 +33,16 @@ public class StudySessionController {
             @RequestHeader("Authorization") String token) {
         String username = extractUsernameFromHeader(token);
         return ResponseEntity.ok(sessionService.getUserSessions(username));
+    }
+
+    // 날짜별 회고 조회
+    @GetMapping("/memo")
+    public ResponseEntity<List<String>> getMemosByDate(
+            @RequestHeader("Authorization") String token,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        String username = extractUsernameFromHeader(token);
+        return ResponseEntity.ok(sessionService.getMemosByDate(username, date));
     }
 
     // ✅ 토큰에서 Bearer 제거하고 username 추출
