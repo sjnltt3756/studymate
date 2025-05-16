@@ -1,9 +1,9 @@
 package com.studymate.controller;
 
 import com.studymate.config.JwtUtil;
-import com.studymate.dto.LoginRequest;
-import com.studymate.dto.LoginResponse;
-import com.studymate.dto.SignupRequest;
+import com.studymate.dto.user.LoginRequest;
+import com.studymate.dto.user.LoginResponse;
+import com.studymate.dto.user.SignupRequest;
 import com.studymate.entity.User;
 import com.studymate.service.UserService;
 import lombok.RequiredArgsConstructor;

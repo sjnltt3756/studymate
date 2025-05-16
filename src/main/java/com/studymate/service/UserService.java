@@ -1,7 +1,7 @@
 package com.studymate.service;
 
 import com.studymate.entity.User;
-import com.studymate.dto.SignupRequest;
+import com.studymate.dto.user.SignupRequest;
 import com.studymate.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

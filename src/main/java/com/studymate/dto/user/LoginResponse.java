@@ -1,4 +1,4 @@
-package com.studymate.dto;
+package com.studymate.dto.user;
 
 import lombok.Builder;
 import lombok.Getter;
