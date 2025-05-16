@@ -30,6 +30,14 @@ public class TagController {
         return ResponseEntity.ok(tagService.getTags(username));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTag(@PathVariable Long id,
+                                            @RequestHeader("Authorization") String token) {
+        String username = extractUsernameFromHeader(token);
+        tagService.deleteTag(username, id);
+        return ResponseEntity.ok("태그 삭제 완료");
+    }
+
     private String extractUsernameFromHeader(String token) {
         if (token != null && token.startsWith("Bearer ")) {
             return JwtUtil.extractUsername(token.substring(7));

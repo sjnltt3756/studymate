@@ -31,4 +31,18 @@ public class TagService {
         return tagRepository.findAllByUserId(user.getId())
                 .stream().map(Tag::getName).toList();
     }
+
+    public void deleteTag(String username, Long tagId) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        Tag tag = tagRepository.findById(tagId)
+                .orElseThrow(() -> new IllegalArgumentException("태그 없음"));
+
+        if (!tag.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("본인의 태그만 삭제할 수 있습니다.");
+        }
+
+        tagRepository.delete(tag);
+    }
 }
