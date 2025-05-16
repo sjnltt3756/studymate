@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/sessions")
@@ -35,7 +36,7 @@ public class StudySessionController {
         return ResponseEntity.ok(sessionService.getUserSessions(username));
     }
 
-    // 날짜별 회고 조회
+    // 날짜별 메모 조회
     @GetMapping("/memo")
     public ResponseEntity<List<String>> getMemosByDate(
             @RequestHeader("Authorization") String token,
@@ -43,6 +44,18 @@ public class StudySessionController {
 
         String username = extractUsernameFromHeader(token);
         return ResponseEntity.ok(sessionService.getMemosByDate(username, date));
+    }
+
+    // 메모 수정
+    @PatchMapping("/{id}/memo")
+    public ResponseEntity<String> updateMemo(@PathVariable Long id,
+                                             @RequestBody Map<String, String> body,
+                                             @RequestHeader("Authorization") String token) {
+        String newMemo = body.get("memo");
+        String username = extractUsernameFromHeader(token);
+
+        sessionService.updateMemo(username, id, newMemo);
+        return ResponseEntity.ok("회고 수정 완료");
     }
 
     // ✅ 토큰에서 Bearer 제거하고 username 추출
@@ -53,5 +66,7 @@ public class StudySessionController {
         }
         throw new IllegalArgumentException("유효한 Authorization 헤더가 필요합니다.");
     }
+
+
 }
 

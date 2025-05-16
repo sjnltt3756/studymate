@@ -47,4 +47,8 @@ public class StudySession {
         session.createdAt = LocalDateTime.now();
         return session;
     }
+
+    public void updateMemo(String newMemo) {
+        this.memo = newMemo;
+    }
 }

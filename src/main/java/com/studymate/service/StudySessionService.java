@@ -8,6 +8,7 @@ import com.studymate.entity.User;
 import com.studymate.repository.StudySessionRepository;
 import com.studymate.repository.TagRepository;
 import com.studymate.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -68,5 +69,21 @@ public class StudySessionService {
                 .map(StudySession::getMemo)
                 .filter(memo -> memo != null && !memo.isBlank())
                 .toList();
+    }
+
+    @Transactional
+    public void updateMemo(String username, Long sessionId, String newMemo) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        StudySession session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("기록 없음"));
+
+        if (!session.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("본인의 기록만 수정할 수 있습니다.");
+        }
+
+        // 엔티티 내에서 직접 메모 수정
+        session.updateMemo(newMemo);
     }
 }
