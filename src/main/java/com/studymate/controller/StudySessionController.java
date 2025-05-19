@@ -21,6 +21,7 @@ public class StudySessionController {
 
     private final StudySessionService sessionService;
 
+    // 기록 저장
     @PostMapping
     public ResponseEntity<String> save(@RequestBody StudySessionRequest request,
                                        @RequestHeader("Authorization") String token) {
@@ -28,7 +29,7 @@ public class StudySessionController {
         sessionService.saveSession(username, request);
         return ResponseEntity.ok("공부 기록 저장 완료");
     }
-
+     // 기록 조회
     @GetMapping
     public ResponseEntity<List<StudySessionResponse>> getMySessions(
             @RequestHeader("Authorization") String token) {
@@ -58,7 +59,14 @@ public class StudySessionController {
         return ResponseEntity.ok("회고 수정 완료");
     }
 
-    // ✅ 토큰에서 Bearer 제거하고 username 추출
+    // openAI 메모 요약
+    @GetMapping("/{id}/summarize")
+    public ResponseEntity<String> summarizeMemo(@PathVariable Long id) {
+        String summary = sessionService.summarizeMemo(id);
+        return ResponseEntity.ok(summary);
+    }
+
+    //  토큰에서 Bearer 제거하고 username 추출
     private String extractUsernameFromHeader(String token) {
         if (token != null && token.startsWith("Bearer ")) {
             String jwt = token.substring(7);

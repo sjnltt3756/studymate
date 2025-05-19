@@ -23,6 +23,7 @@ public class StudySessionService {
     private final StudySessionRepository sessionRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
+    private final OpenAIService openAIService;
 
     public void saveSession(String username, StudySessionRequest request) {
         User user = userRepository.findByUsername(username)
@@ -85,5 +86,17 @@ public class StudySessionService {
 
         // 엔티티 내에서 직접 메모 수정
         session.updateMemo(newMemo);
+    }
+
+    public String summarizeMemo(Long sessionId) {
+        StudySession session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("기록 없음"));
+
+        String memo = session.getMemo();
+        if (memo == null || memo.isBlank()) {
+            return "요약할 회고가 없습니다.";
+        }
+
+        return openAIService.summarizeText(memo);
     }
 }
