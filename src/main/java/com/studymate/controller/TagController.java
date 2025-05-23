@@ -1,5 +1,6 @@
 package com.studymate.controller;
 
+import com.studymate.common.ApiResponse;
 import com.studymate.config.JwtUtil;
 import com.studymate.dto.tag.TagRequest;
 import com.studymate.service.TagService;
@@ -21,27 +22,27 @@ public class TagController {
 
     @Operation(summary = "태그 생성", description = "새로운 태그를 생성합니다.")
     @PostMapping
-    public ResponseEntity<String> createTag(@RequestBody TagRequest request,
-                                            @RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<String>> createTag(@RequestBody TagRequest request,
+                                                         @RequestHeader("Authorization") String token) {
         String username = extractUsernameFromHeader(token);
         tagService.createTag(username, request);
-        return ResponseEntity.ok("태그 생성 완료");
+        return ResponseEntity.ok(ApiResponse.success("태그 생성 완료", "생성 성공"));
     }
 
     @Operation(summary = "태그 조회", description = "내가 생성한 태그 목록을 조회합니다.")
     @GetMapping
-    public ResponseEntity<List<String>> getTags(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<List<String>>> getTags(@RequestHeader("Authorization") String token) {
         String username = extractUsernameFromHeader(token);
-        return ResponseEntity.ok(tagService.getTags(username));
+        return ResponseEntity.ok(ApiResponse.success(tagService.getTags(username), "조회 성공"));
     }
 
     @Operation(summary = "태그 삭제", description = "선택한 태그를 삭제합니다.")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTag(@PathVariable Long id,
-                                            @RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<String>> deleteTag(@PathVariable Long id,
+                                                         @RequestHeader("Authorization") String token) {
         String username = extractUsernameFromHeader(token);
         tagService.deleteTag(username, id);
-        return ResponseEntity.ok("태그 삭제 완료");
+        return ResponseEntity.ok(ApiResponse.success("태그 삭제 완료", "삭제 성공"));
     }
 
     private String extractUsernameFromHeader(String token) {

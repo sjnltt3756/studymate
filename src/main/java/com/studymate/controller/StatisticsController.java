@@ -1,15 +1,13 @@
 package com.studymate.controller;
 
+import com.studymate.common.ApiResponse;
 import com.studymate.config.JwtUtil;
 import com.studymate.service.StudyStatisticsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -24,23 +22,23 @@ public class StatisticsController {
 
     @Operation(summary = "일간 통계", description = "하루 동안의 시간대별 공부량을 조회합니다.")
     @GetMapping("/daily")
-    public ResponseEntity<List<Integer>> getDaily(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<List<Integer>>> getDaily(@RequestHeader("Authorization") String token) {
         String username = extractUsername(token);
-        return ResponseEntity.ok(statisticsService.getDailyStudyHours(username));
+        return ResponseEntity.ok(ApiResponse.success(statisticsService.getDailyStudyHours(username), "일간 통계 조회 성공"));
     }
 
     @Operation(summary = "주간 통계", description = "일주일 간 요일별 총 공부 시간을 조회합니다.")
     @GetMapping("/weekly")
-    public ResponseEntity<Map<String, Integer>> getWeekly(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<Map<String, Integer>>> getWeekly(@RequestHeader("Authorization") String token) {
         String username = extractUsername(token);
-        return ResponseEntity.ok(statisticsService.getWeeklyStudyHours(username));
+        return ResponseEntity.ok(ApiResponse.success(statisticsService.getWeeklyStudyHours(username), "주간 통계 조회 성공"));
     }
 
     @Operation(summary = "태그별 통계", description = "태그별 누적 공부 시간을 조회합니다.")
     @GetMapping("/tag")
-    public ResponseEntity<Map<String, Integer>> getByTag(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<Map<String, Integer>>> getByTag(@RequestHeader("Authorization") String token) {
         String username = extractUsername(token);
-        return ResponseEntity.ok(statisticsService.getStudyTimeByTag(username));
+        return ResponseEntity.ok(ApiResponse.success(statisticsService.getStudyTimeByTag(username), "태그 통계 조회 성공"));
     }
 
     private String extractUsername(String token) {
