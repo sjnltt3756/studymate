@@ -4,6 +4,7 @@ import com.studymate.common.ApiResponse;
 import com.studymate.config.JwtUtil;
 import com.studymate.service.StudyStatisticsService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "공부 통계 API", description = "공부 시간 분석 데이터 제공")
 @RestController
 @RequestMapping("/api/statistics")

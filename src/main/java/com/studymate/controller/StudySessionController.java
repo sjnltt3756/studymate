@@ -6,17 +6,18 @@ import com.studymate.dto.studysession.StudySessionRequest;
 import com.studymate.dto.studysession.StudySessionResponse;
 import com.studymate.service.StudySessionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "공부 기록 API", description = "공부 기록 저장 및 회고 관리")
 @RestController
 @RequestMapping("/api/sessions")
