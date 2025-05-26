@@ -24,11 +24,11 @@ public class TagController {
 
     @Operation(summary = "태그 생성", description = "새로운 태그를 생성합니다.")
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> createTag(@RequestBody TagRequest request,
-                                                         @RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<Long>> createTag(@RequestBody TagRequest request,
+                                                       @RequestHeader("Authorization") String token) {
         String username = extractUsernameFromHeader(token);
-        tagService.createTag(username, request);
-        return ResponseEntity.ok(ApiResponse.success("태그 생성 완료", "생성 성공"));
+        Long tagId = tagService.createTag(username, request); // ➤ ID를 반환받도록 수정
+        return ResponseEntity.ok(ApiResponse.success(tagId, "태그 생성 완료"));
     }
 
     @Operation(summary = "태그 조회", description = "내가 생성한 태그 목록을 조회합니다.")

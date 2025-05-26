@@ -20,12 +20,13 @@ public class TagService {
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
 
-    public void createTag(String username, TagRequest request) {
+    public Long createTag(String username, TagRequest request) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException());
 
         Tag tag = Tag.create(request.getName(), user);
         tagRepository.save(tag);
+        return tag.getId();
     }
 
     public List<String> getTags(String username) {
