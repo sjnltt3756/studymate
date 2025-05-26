@@ -5,6 +5,10 @@ import com.studymate.dto.studysession.StudySessionResponse;
 import com.studymate.entity.StudySession;
 import com.studymate.entity.Tag;
 import com.studymate.entity.User;
+import com.studymate.exception.ForbiddenException;
+import com.studymate.exception.StudySessionNotFoundException;
+import com.studymate.exception.TagNotFoundException;
+import com.studymate.exception.UserNotFoundException;
 import com.studymate.repository.StudySessionRepository;
 import com.studymate.repository.TagRepository;
 import com.studymate.repository.UserRepository;
@@ -27,9 +31,9 @@ public class StudySessionService {
 
     public void saveSession(String username, StudySessionRequest request) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                .orElseThrow(UserNotFoundException::new);
         Tag tag = tagRepository.findById(request.getTagId())
-                .orElseThrow(() -> new IllegalArgumentException("태그를 찾을 수 없습니다."));
+                .orElseThrow(TagNotFoundException::new);
 
         int duration = (int) Duration.between(request.getStartTime(), request.getEndTime()).toMinutes();
 
@@ -42,7 +46,7 @@ public class StudySessionService {
 
     public List<StudySessionResponse> getUserSessions(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                .orElseThrow(UserNotFoundException::new);
 
         return sessionRepository.findAllByUserIdOrderByStartTimeDesc(user.getId())
                 .stream()
@@ -57,10 +61,9 @@ public class StudySessionService {
                 .toList();
     }
 
-    // 날짜별 회고 조회
     public List<String> getMemosByDate(String username, LocalDate date) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+                .orElseThrow(UserNotFoundException::new);
 
         List<StudySession> sessions = sessionRepository.findAllByUserIdAndStartTimeBetween(
                 user.getId(), date.atStartOfDay(), date.atTime(23, 59, 59)
@@ -75,22 +78,21 @@ public class StudySessionService {
     @Transactional
     public void updateMemo(String username, Long sessionId, String newMemo) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+                .orElseThrow(UserNotFoundException::new);
 
         StudySession session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("기록 없음"));
+                .orElseThrow(StudySessionNotFoundException::new);
 
         if (!session.getUser().getId().equals(user.getId())) {
-            throw new IllegalArgumentException("본인의 기록만 수정할 수 있습니다.");
+            throw new ForbiddenException("본인의 기록만 수정할 수 있습니다.");
         }
 
-        // 엔티티 내에서 직접 메모 수정
         session.updateMemo(newMemo);
     }
 
     public String summarizeMemo(Long sessionId) {
         StudySession session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("기록 없음"));
+                .orElseThrow(StudySessionNotFoundException::new);
 
         String memo = session.getMemo();
         if (memo == null || memo.isBlank()) {

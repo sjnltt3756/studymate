@@ -1,7 +1,10 @@
 package com.studymate.service;
 
-import com.studymate.entity.User;
 import com.studymate.dto.user.SignupRequest;
+import com.studymate.entity.User;
+import com.studymate.exception.DuplicateUserException;
+import com.studymate.exception.InvalidPasswordException;
+import com.studymate.exception.UserNotFoundException;
 import com.studymate.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,22 +21,26 @@ public class UserService {
 
     public void signup(SignupRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
+            throw new DuplicateUserException();
         }
+
         User user = User.create(
                 request.getUsername(),
                 passwordEncoder.encode(request.getPassword()),
                 request.getEmail()
         );
+
         userRepository.save(user);
     }
 
     public User authenticate(String username, String rawPassword) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                .orElseThrow(UserNotFoundException::new);
+
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new InvalidPasswordException();
         }
+
         return user;
     }
 }

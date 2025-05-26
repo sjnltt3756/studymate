@@ -2,6 +2,7 @@ package com.studymate.service;
 
 import com.studymate.entity.StudySession;
 import com.studymate.entity.User;
+import com.studymate.exception.UserNotFoundException;
 import com.studymate.repository.StudySessionRepository;
 import com.studymate.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,8 @@ public class StudyStatisticsService {
 
     public List<Integer> getDailyStudyHours(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+                .orElseThrow(UserNotFoundException::new);
 
-        // 오늘 00:00 ~ 23:59:59 범위
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
 
@@ -31,7 +31,6 @@ public class StudyStatisticsService {
                 user.getId(), startOfDay, endOfDay
         );
 
-        // 시간대별 분 단위 합산 (0시~23시)
         int[] hourly = new int[24];
         for (StudySession session : sessions) {
             LocalDateTime start = session.getStartTime();
@@ -50,9 +49,8 @@ public class StudyStatisticsService {
 
     public Map<String, Integer> getWeeklyStudyHours(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+                .orElseThrow(UserNotFoundException::new);
 
-        // 이번 주: 오늘 기준 최근 7일
         LocalDate now = LocalDate.now();
         LocalDateTime startTime = now.minusDays(6).atStartOfDay();
         LocalDateTime endTime = now.atTime(23, 59, 59);
@@ -61,7 +59,6 @@ public class StudyStatisticsService {
                 user.getId(), startTime, endTime
         );
 
-        // 요일 순서 고정: 월 → 일
         List<DayOfWeek> weekOrder = List.of(
                 DayOfWeek.MONDAY,
                 DayOfWeek.TUESDAY,
@@ -88,7 +85,7 @@ public class StudyStatisticsService {
 
     public Map<String, Integer> getStudyTimeByTag(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+                .orElseThrow(UserNotFoundException::new);
 
         List<StudySession> sessions = sessionRepository.findAllByUserId(user.getId());
 
